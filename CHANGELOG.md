@@ -1,5 +1,5 @@
 # Changelog
-**Author: Your Name Here**
+**Author: Carl Zhang**
 
 All notable changes to this project will be documented in this file.
 
