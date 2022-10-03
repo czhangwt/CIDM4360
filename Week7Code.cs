@@ -2,11 +2,10 @@
 
 // Remote Database Setting
 Server Type: MySQL
-Host: 20.172.0.16
-Port: 8080 (default: 3306)
-Username/Password/Database: which is the name of YOUR WT Email. For example, my email is czhang@wtamu.edu, so my username, password and database are czhang
+Host: DB_IP_Address
+Port: DB_PORT (default: 3306)
+Username/Password/Database: which is the name of YOUR WT Email. For example, my email is abc@wtamu.edu, so my username, password and database are abc
 Then click Connect button
-
 
 // Create Student, Course, Enrollment Table
 CREATE TABLE Student(  
@@ -103,7 +102,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        string connStr = "server=20.172.0.16;user=YOUR_USERNAME;database=YOUR_DATABASE;port=8080;password=YOUR_PASSWORD";
+        string connStr = "server=DB_IP_Address;user=YOUR_USERNAME;database=YOUR_DATABASE;port=8080;password=YOUR_PASSWORD";
         MySqlConnection conn = new MySqlConnection(connStr);
         try
         {
@@ -147,7 +146,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        string connStr = "server=20.172.0.16;user=YOUR_USERNAME;database=YOUR_DATABASE;port=8080;password=YOUR_PASSWORD";
+        string connStr = "server=DB_IP_Address;user=YOUR_USERNAME;database=YOUR_DATABASE;port=8080;password=YOUR_PASSWORD";
         MySqlConnection conn = new MySqlConnection(connStr);
         try
         {
@@ -191,7 +190,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        string connStr = "server=20.172.0.16;user=YOUR_USERNAME;database=YOUR_DATABASE;port=8080;password=YOUR_PASSWORD";
+        string connStr = "server=DB_IP_Address;user=YOUR_USERNAME;database=YOUR_DATABASE;port=8080;password=YOUR_PASSWORD";
         MySqlConnection conn = new MySqlConnection(connStr);
         try
         {
@@ -226,7 +225,7 @@ class Program
     }
 }
 
-// ----------------- Example3: Working with Stored Procedures
+// ----------------- Example 4: Working with Stored Procedure
 
 DELIMITER //
 CREATE PROCEDURE LoginCount (IN inputUsername CHAR(20), IN inputPassword CHAR(20), OUT userCount INT)
@@ -253,7 +252,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        string connStr = "server=20.172.0.16;user=YOUR_USERNAME;database=YOUR_DATABASE;port=8080;password=YOUR_PASSWORD";
+        string connStr = "server=DB_IP_Address;user=YOUR_USERNAME;database=YOUR_DATABASE;port=8080;password=YOUR_PASSWORD";
         MySqlConnection conn = new MySqlConnection(connStr);
         try
         {
