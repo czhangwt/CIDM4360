@@ -13,7 +13,7 @@ internal class Program
         // this serviceConnectionString is stored in the code diectly in this example for demo purpose
         // it should be stored in the server when working for a business application.
         // ref: https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/create-communication-resource?tabs=windows&pivots=platform-azp#store-your-connection-string
-        string serviceConnectionString =  "YourConnectionString"
+        string serviceConnectionString =  "YourConnectionString";
         EmailClient emailClient = new EmailClient(serviceConnectionString);
         var subject = "Hello CIDM4360/5360 Week10";
         var emailContent = new EmailContent(subject);
