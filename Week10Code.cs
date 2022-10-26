@@ -29,7 +29,7 @@ internal class Program
 
 
         // mailfrom domain of your email service on Azure
-        var sender = "DoNotReply@c394312d-b325-4486-ac6e-f3e92c277cad.azurecomm.net";
+        var sender = "YourDomain";
 
         Console.WriteLine("Please input an email address: ");
         string inputEmail = Console.ReadLine();
