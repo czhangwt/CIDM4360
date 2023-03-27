@@ -13,13 +13,11 @@ internal class Program
         // this serviceConnectionString is stored in the code diectly in this example for demo purpose
         // it should be stored in the server when working for a business application.
         // ref: https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/create-communication-resource?tabs=windows&pivots=platform-azp#store-your-connection-string
-        string serviceConnectionString =  "YOUR_CONNECTION_STRING";
-        EmailClient emailClient = new EmailClient(serviceConnectionString);
-        var subject = "Hello CIDM4360";
-        // mailfrom domain of your email service on Azure
-        var sender = "YourDomain";
-
-        var htmlContent = @"
+      var sender = "YOUR_SENDER_EMAIL(MainFrom)";
+      string serviceConnectionString =  "YOUR_CONNECTION_STRING";
+      EmailClient emailClient = new EmailClient(serviceConnectionString);
+      var subject = "Hello CIDM4360";
+      var htmlContent = @"
                     <html>
                         <body>
                             <h1 style=color:red>Testing Email for Azure Email Service</h1>
@@ -28,34 +26,58 @@ internal class Program
                         </body>
                     </html>";
 
-        Console.WriteLine("Please input recipient email address: ");
-        string? recipient = Console.ReadLine();
+      Console.WriteLine("Please input recipient email address: ");
+      string? recipient = Console.ReadLine();
 
-        try
+      try
+         {
+         Console.WriteLine("Sending email with Async no Wait...");
+         EmailSendOperation emailSendOperation = await emailClient.SendAsync(Azure.WaitUntil.Started,  sender, recipient, subject, htmlContent);
+
+         var cancellationToken = new CancellationTokenSource(TimeSpan.FromMinutes(2));
+
+         // Poll for email send status manually
+         while (!cancellationToken.IsCancellationRequested)
+         {
+            await emailSendOperation.UpdateStatusAsync();
+            if (emailSendOperation.HasCompleted)
             {
-               Console.WriteLine("Sending email...");
-               EmailSendOperation emailSendOperation = await emailClient.SendAsync(Azure.WaitUntil.Completed, sender, recipient, subject, htmlContent);
-               EmailSendResult statusMonitor = emailSendOperation.Value;
-
-               string operationId = emailSendOperation.Id;
-               var emailSendStatus = statusMonitor.Status;
-
-               if (emailSendStatus == EmailSendStatus.Succeeded)
-               {
-                     Console.WriteLine($"Email send operation succeeded with OperationId = {operationId}.\nEmail is out for delivery.");
-               }
-               else
-               {
-                     var error = statusMonitor.Error;
-                     Console.WriteLine($"Failed to send email.\n OperationId = {operationId}.\n Status = {emailSendStatus}.");
-                     Console.WriteLine($"Error Code = {error.Code}, Message = {error.Message}");
-                     return;
-               }
+               break;
             }
-        catch (Exception ex)
+            Console.WriteLine("Email send operation is still running...");
+            await Task.Delay(2000);
+         }
+         if (emailSendOperation.HasValue)
+         {
+            EmailSendResult statusMonitor = emailSendOperation.Value;
+            string operationId = emailSendOperation.Id;
+            var emailSendStatus = statusMonitor.Status;
+
+            if (emailSendStatus == EmailSendStatus.Succeeded)
             {
-               Console.WriteLine($"Error in sending email, {ex}");
+               Console.WriteLine($"Email send operation succeeded with OperationId = {operationId}.\nEmail is out for delivery.");
             }
-    }
+            else
+            {
+               var error = statusMonitor.Error;
+               Console.WriteLine($"Failed to send email.\n OperationId = {operationId}.\n Status = {emailSendStatus}.");
+               Console.WriteLine($"Error Code = {error.Code}, Message = {error.Message}");
+               return;
+            }
+         }
+         else if (cancellationToken.IsCancellationRequested)
+         {
+            Console.WriteLine($"We have timed out while  polling for email status");
+         }
+      }
+      catch (Exception ex)
+         {
+            Console.WriteLine($"Error in sending email, {ex}");
+         }
+   }
 }
+
+
+
+
 
