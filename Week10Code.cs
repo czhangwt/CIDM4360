@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Communication.Email;
 
-namespace Week10;
+namespace Week11;
 internal class Program
 {
     static async Task Main(string[] args)
@@ -13,71 +13,56 @@ internal class Program
         // this serviceConnectionString is stored in the code diectly in this example for demo purpose
         // it should be stored in the server when working for a business application.
         // ref: https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/create-communication-resource?tabs=windows&pivots=platform-azp#store-your-connection-string
-      var sender = "YOUR_SENDER_EMAIL(MainFrom)";
-      string serviceConnectionString =  "YOUR_CONNECTION_STRING";
-      EmailClient emailClient = new EmailClient(serviceConnectionString);
-      var subject = "Hello CIDM4360";
-      var htmlContent = @"
-                    <html>
-                        <body>
-                            <h1 style=color:red>Testing Email for Azure Email Service</h1>
-                            <h4>This is a HTML content</h4>
-                            <p>Happy Learning!!</p>
-                        </body>
-                    </html>";
+        var sender = "YOUR_SENDER_EMAIL(MainFrom)";
+        string serviceConnectionString =  "YOUR_CONNECTION_STRING";
+        
+        EmailClient emailClient = new EmailClient(serviceConnectionString);
+        var subject = "Hello CIDM4360";
+        var htmlContent = @"
+                        <html>
+                            <body>
+                                <h1 style=color:red>Testing Email for Azure Email Service</h1>
+                                <h4>This is a HTML content</h4>
+                                <p>Happy Learning!!</p>
+                            </body>
+                        </html>";
 
-      Console.WriteLine("Please input recipient email address: ");
-      string? recipient = Console.ReadLine();
+        Console.WriteLine("Please input recipient email address: ");
+        string? recipient = Console.ReadLine();
 
-      try
-         {
-         Console.WriteLine("Sending email with Async no Wait...");
-         EmailSendOperation emailSendOperation = await emailClient.SendAsync(Azure.WaitUntil.Started,  sender, recipient, subject, htmlContent);
+        Console.WriteLine("Sending email with Async no Wait...");
+            EmailSendOperation emailSendOperation = await emailClient.SendAsync(
+            Azure.WaitUntil.Started,
+            sender,
+            recipient,
+            subject,
+            htmlContent);
 
-         var cancellationToken = new CancellationTokenSource(TimeSpan.FromMinutes(2));
-
-         // Poll for email send status manually
-         while (!cancellationToken.IsCancellationRequested)
-         {
-            await emailSendOperation.UpdateStatusAsync();
-            if (emailSendOperation.HasCompleted)
+        /// Call UpdateStatus on the email send operation to poll for the status manually.
+        try
+        {
+            while (true)
             {
-               break;
+                await emailSendOperation.UpdateStatusAsync();
+                if (emailSendOperation.HasCompleted)
+                {
+                    break;
+                }
+                await Task.Delay(2000);
             }
-            Console.WriteLine("Email send operation is still running...");
-            await Task.Delay(2000);
-         }
-         if (emailSendOperation.HasValue)
-         {
-            EmailSendResult statusMonitor = emailSendOperation.Value;
-            string operationId = emailSendOperation.Id;
-            var emailSendStatus = statusMonitor.Status;
 
-            if (emailSendStatus == EmailSendStatus.Succeeded)
+            if (emailSendOperation.HasValue)
             {
-               Console.WriteLine($"Email send operation succeeded with OperationId = {operationId}.\nEmail is out for delivery.");
+                Console.WriteLine($"Email queued for delivery. Status = {emailSendOperation.Value.Status}");
             }
-            else
-            {
-               var error = statusMonitor.Error;
-               Console.WriteLine($"Failed to send email.\n OperationId = {operationId}.\n Status = {emailSendStatus}.");
-               Console.WriteLine($"Error Code = {error.Code}, Message = {error.Message}");
-               return;
-            }
-         }
-         else if (cancellationToken.IsCancellationRequested)
-         {
-            Console.WriteLine($"We have timed out while  polling for email status");
-         }
-      }
-      catch (Exception ex)
-         {
-            Console.WriteLine($"Error in sending email, {ex}");
-         }
-   }
+        }
+        catch (RequestFailedException ex)
+        {
+            Console.WriteLine($"Email send failed with Code = {ex.ErrorCode} and Message = {ex.Message}");
+        }
+
+        /// Get the OperationId so that it can be used for tracking the message for troubleshooting
+        string operationId = emailSendOperation.Id;
+        Console.WriteLine($"Email operation id = {operationId}");
+    }    
 }
-
-
-
-
-
