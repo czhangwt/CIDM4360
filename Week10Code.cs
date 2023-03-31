@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Communication.Email;
 
-namespace Week11;
+namespace Week10;
 internal class Program
 {
     static async Task Main(string[] args)
