@@ -6,10 +6,10 @@ import mysql.connector  # Import the MySQL connector library
 def main():
     # Define the connection string
     conn_str = {
-        'host': '34.69.59.37',
+        'host': 'HOST_IP',
         'user': 'YOUR_USERNAME',  # Replace with your MySQL username
         'database': 'YOUR_DATABASE',  # Replace with your database name
-        'port': 8080,
+        'port': PORT_NUMBER,
         'password': 'YOUR_PASSWORD'  # Replace with your MySQL password
     }
     try:
@@ -47,10 +47,10 @@ import mysql.connector  # Import the MySQL connector library
 def main():
     # Define the connection string
     conn_str = {
-        'host': '34.69.59.37',
+        'host': 'HOST_IP',
         'user': 'YOUR_USERNAME',  # Replace with your MySQL username
         'database': 'YOUR_DATABASE',  # Replace with your database name
-        'port': 8080,
+        'port': PORT_NUMBER,
         'password': 'YOUR_PASSWORD'  # Replace with your MySQL password
     }
     try:
@@ -89,10 +89,10 @@ import mysql.connector  # Import the MySQL connector library
 def main():
     # Define the connection string
     conn_str = {
-        'host': '34.69.59.37',
+        'host': 'HOST_IP',
         'user': 'YOUR_USERNAME',  # Replace with your MySQL username
         'database': 'YOUR_DATABASE',  # Replace with your database name
-        'port': 8080,
+        'port': PORT_NUMBER,
         'password': 'YOUR_PASSWORD'  # Replace with your MySQL password
     }
     try:         # Establish connection
@@ -127,6 +127,50 @@ def main():
 if __name__ == "__main__":
     main()
 
+
+# Python Example 4: Working with Stored Procedure
+# Simulate login process using procedure
+import mysql.connector  # Import the MySQL connector library
+
+def main():
+    # Define the connection string
+    conn_str = {
+        'host': 'HOST_IP',
+        'user': 'YOUR_USERNAME',  # Replace with your MySQL username
+        'database': 'YOUR_DATABASE',  # Replace with your database name
+        'port': PORT_NUMBER,
+        'password': 'YOUR_PASSWORD'  # Replace with your MySQL password
+    }
+    try:
+        # Establish connection
+        print("Connecting to MySQL...")
+        conn = mysql.connector.connect(**conn_str)
+        cursor = conn.cursor()
+        # Input information
+        username = input("Enter Username: ")
+        password = input("Enter Password: ")
+        # Stored procedure name
+        procedure = "LoginCount"
+        # Call the stored procedure with parameters
+        results = cursor.callproc(procedure, [username, password, 0]) #Initial value for out parameter.
+        return_login_count = results[2]  # Third item is the out parameter (@userCount)
+        #Process the return value
+        if return_login_count == 1:
+            print("Login Successfully!")
+        else:
+            print("Cannot find user")
+    except mysql.connector.Error as err:
+        # Handle any exceptions that occur during the process
+        print(f"Error: {err}")
+    finally:
+        # Ensure the connection is closed, even if an error occurred
+        if conn.is_connected():
+            cursor.close()  # Close the cursor
+            conn.close()  # Close the connection
+            print("MySQL connection is closed")
+    print("Done.")
+if __name__ == "__main__":
+    main()
 
 
 
