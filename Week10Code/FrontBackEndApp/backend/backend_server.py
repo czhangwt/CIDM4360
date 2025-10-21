@@ -1,6 +1,6 @@
 """
 A simple backend server using FastAPI to serve API and interact with a SQLite database.
-To run this server locally, use the command in terminal: fastapi dev backend_server.py
+To run this server locally, use the command in terminal: fastapi dev backend_server.py --port 8000
 """
 
 from fastapi import FastAPI
